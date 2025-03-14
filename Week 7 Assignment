@@ -1,0 +1,53 @@
+import pandas as pd
+import matplotlib.pyplot as plt
+
+## Read file at path location ((INPUT FILE PATH HERE))
+file_path = r"input file path"
+df = pd.read_csv(file_path)
+
+## Convert the file to a dictionary
+data_dict = df.to_dict(orient='records')
+
+## Total sales
+total_sales = df['sales'].sum()
+print("Total sales:", total_sales)
+
+## Top three regions by product sold
+top_regions = df.groupby('region')['sales'].sum().nlargest(3)
+
+print("Top three regions by product sold:")
+print(top_regions.to_string()[7:])
+
+## Which sold more
+bobbles_sales = df[df['product'].str.lower() == 'bobbles']['sales'].sum()
+widgets_sales = df[df['product'].str.lower() == 'widgets']['sales'].sum()
+winner = "Bobbles" if bobbles_sales > widgets_sales else "Widgets"
+
+print(f"Which sold more? {winner}")
+
+## Calculate revenue
+bobble_price, widget_price = 10.99, 15.99
+bobble_revenue = float(bobbles_sales) * bobble_price
+widget_revenue = float(widgets_sales) * widget_price
+highest_revenue = "Bobbles" if bobble_revenue > widget_revenue else "Widgets"
+
+print(f"Revenue - Bobbles: ${bobble_revenue:.2f}, Widgets: ${widget_revenue:.2f}")
+print(f"Which product made the most revenue? {highest_revenue}")
+
+## Finding the region and product with least sales
+least_sold = df.loc[df['sales'].idxmin(), ['region', 'product']]
+print("Least sold region and product:", least_sold.to_dict())
+
+## Bar chart: Sales by Region
+df.groupby('region')['sales'].sum().plot(kind='bar', title='Overall Sales by Region')
+
+plt.ylabel("Sales")
+plt.xlabel("Region")
+plt.show()
+
+## Pie chart: Sales by Product
+df.groupby('product')['sales'].sum().plot(kind='pie', autopct='%1.1f%%', title='Overall Sales by Product')
+plt.ylabel("")
+plt.show()
+
+## And this time I didn't even use for loops. I'm evolving.
